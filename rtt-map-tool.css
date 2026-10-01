@@ -1,0 +1,349 @@
+/**
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+body, html { height: 100%; margin: 0; padding: 0; font-family: sans-serif; background: #f4f4f4; }
+
+#error-box { display: none; background: #ffe6e6; color: red; padding: 10px; border: 1px solid red; position: absolute; top:0; left:0; width: 100%; z-index: 9999; }
+
+/* --- LAYOUT CONTAINER --- */
+#app-container { display: flex; height: 100vh; width: 100vw; overflow: hidden; position: relative; }
+
+/* --- SIDEBAR (CONTROLS) --- */
+.controls {
+  width: 350px;
+  min-width: 350px;
+  background: #fdfdfd;
+  padding: 12px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  flex-shrink: 0;
+  z-index: 1000;
+  position: relative;
+}
+
+#sidebarTitle {
+  margin-top: 0;
+  margin-bottom: 5px;
+  color: #333;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  padding: 6px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.subpanel {
+  border-radius: 8px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  margin-bottom: 0;
+}
+.subpanel h4 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #000000;
+  font-weight: bold;
+  font-size: 14px;
+  border-left: 5px solid;
+  padding-left: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.subpanel-file { background-color: #FADBD8; border: 1px solid #F5B7B1; }
+.subpanel-file h4 { border-left-color: #E74C3C; }
+
+.subpanel-map { background-color: #FDEBD0; border: 1px solid #F5CBA7; }
+.subpanel-map h4 { border-left-color: #E67E22; }
+
+
+
+.subpanel-params { background-color: #D5F5E3; border: 1px solid #A9DFBF; }
+.subpanel-params h4 { border-left-color: #2ECC71; }
+
+.subpanel-status { background-color: #FCF3CF; border: 1px solid #F9E79F; }
+.subpanel-status h4 { border-left-color: #F1C40F; }
+
+.subpanel-edit { background-color: #D6EAF8; border: 1px solid #A9CCE3; }
+.subpanel-edit h4 { border-left-color: #3498DB; }
+
+
+.subpanel-export { background-color: #EBDEF0; border: 1px solid #D7BDE2; }
+.subpanel-export h4 { border-left-color: #9B59B6; }
+
+
+
+#map { flex-grow: 1; height: 100%; background: #ddd; position: relative; }
+
+
+input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; background: #fafafa; }
+
+label { font-weight: bold; font-size: 12px; color: #555; display: block; margin-top: 5px;}
+
+button:not(#sidebarToggleBtn) { width: 100%; padding: 10px; background: #2196F3; color: white; border: none; cursor: pointer; font-size: 14px; border-radius: 4px; margin-bottom: 10px; font-weight: bold; }
+button:not(#sidebarToggleBtn):hover { opacity: 0.9; }
+
+
+
+/* --- SEGMENTED CONTROL --- */
+.segmented-control {
+  display: flex;
+  background: #E0E0E0;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+  margin-bottom: 12px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+.segment-label {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  display: block;
+}
+.segment-label input[type="radio"] {
+  display: none !important;
+}
+.segment-label span {
+  display: block;
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: bold;
+  color: #555;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.segment-label input[value="OFF"]:checked + span {
+  background-color: #607D8B;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.segment-label input[value="EDIT"]:checked + span {
+  background-color: #4CAF50;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.segment-label input[value="ADD"]:checked + span {
+  background-color: #2196F3;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.segment-label input[value="DEL"]:checked + span {
+  background-color: #F44336;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.segment-label:hover span {
+  background-color: rgba(255,255,255,0.6);
+}
+.segment-label input:checked:hover span {
+  opacity: 0.95;
+  background-color: inherit;
+}
+
+/* --- ADD PATH MODE SEGMENTED CONTROL --- */
+.segment-label-add {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  display: block;
+}
+.segment-label-add input[type="radio"] {
+  display: none !important;
+}
+.segment-label-add span {
+  display: block;
+  padding: 8px 0;
+  font-size: 11px;
+  font-weight: bold;
+  color: #555;
+  background-color: #cfd8dc; /* Nice grey for inactive state */
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  user-select: none;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.segment-label-add input:checked + span {
+  background-color: #4CAF50 !important; /* Green for active state */
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  border-color: rgba(0,0,0,0.1);
+}
+.segment-label-add:hover span {
+  background-color: #b0bec5;
+  color: #222;
+}
+.segment-label-add input:checked:hover span {
+  opacity: 0.95;
+  background-color: #4CAF50 !important;
+  color: white !important;
+}
+
+/* --- STATE BUTTON COLORS --- */
+
+
+.btn-inactive { background-color: #777 !important; color: white; }
+.btn-inactive:hover { background-color: #666 !important; }
+.btn-active { background-color: #4CAF50 !important; color: white; }
+.btn-active:hover { background-color: #45a049 !important; }
+
+#fallback-container { display: none; margin-top: 10px; background: #fff3cd; padding: 10px; border: 1px solid #ffeeba; border-radius: 4px; }
+#manualFile { width: 100%; }
+
+.coord-box { font-family: monospace; background: #f9f9f9; border: 1px solid #999; color: #333; }
+.auto-field { background-color: #e8f0fe !important; color: #333; }
+
+#changeLog { width: 100%; height: 100px; font-family: monospace; font-size: 11px; white-space: pre; overflow-x: scroll; border: 1px solid #ccc; background: #fff; padding: 5px; margin-top: 5px; box-sizing: border-box; }
+
+#statsBox { background: #fff; border: 1px solid #ccc; border-left: 4px solid #ff9800; padding: 10px; font-size: 12px; margin-bottom: 15px; display: none; }
+#statsBox h5 { margin: 0 0 5px 0; font-size: 13px; border-bottom: 1px solid #eee; padding-bottom: 3px; }
+.stat-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
+.stat-val { font-weight: bold; font-family: monospace; }
+
+input[type=range] { width: 100%; margin: 10px 0; }
+
+/* MARKERS */
+.custom-marker-css { width: 10px; height: 10px; border: 1px solid white; box-shadow: 1px 1px 3px rgba(0,0,0,0.5); display: block; }
+.shape-circle { border-radius: 50%; }
+.shape-square { border-radius: 0; }
+.shape-diamond { transform: rotate(45deg); border-radius: 1px; }
+.shape-triangle { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); border: none; }
+.shape-star { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); border: none; }
+.svg-marker-filter { filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.4)); }
+.pointer-active { cursor: crosshair !important; }
+
+.add-active-AP {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M16 0 L16 32 M0 16 L32 16" stroke="white" stroke-width="3"/><circle cx="16" cy="16" r="6" stroke="white" stroke-width="3" fill="none"/><path d="M16 2 L16 30 M2 16 L30 16" stroke="purple" stroke-width="1.5"/><circle cx="16" cy="16" r="6" stroke="purple" stroke-width="1.5" fill="none"/><circle cx="16" cy="16" r="1.2" fill="purple"/></svg>') 16 16, crosshair !important;
+}
+.add-active-GT {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M16 0 L16 32 M0 16 L32 16" stroke="white" stroke-width="3"/><circle cx="16" cy="16" r="6" stroke="white" stroke-width="3" fill="none"/><path d="M16 2 L16 30 M2 16 L30 16" stroke="%2328B463" stroke-width="1.5"/><circle cx="16" cy="16" r="6" stroke="%2328B463" stroke-width="1.5" fill="none"/><circle cx="16" cy="16" r="1.2" fill="%2328B463"/></svg>') 16 16, crosshair !important;
+}
+.add-active-WP {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M16 0 L16 32 M0 16 L32 16" stroke="white" stroke-width="3"/><circle cx="16" cy="16" r="6" stroke="white" stroke-width="3" fill="none"/><path d="M16 2 L16 30 M2 16 L30 16" stroke="%23F39C12" stroke-width="1.5"/><circle cx="16" cy="16" r="6" stroke="%23F39C12" stroke-width="1.5" fill="none"/><circle cx="16" cy="16" r="1.2" fill="%23F39C12"/></svg>') 16 16, crosshair !important;
+}
+.add-active-CORNERS {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M16 0 L16 32 M0 16 L32 16" stroke="white" stroke-width="3"/><circle cx="16" cy="16" r="6" stroke="white" stroke-width="3" fill="none"/><path d="M16 2 L16 30 M2 16 L30 16" stroke="black" stroke-width="1.5"/><circle cx="16" cy="16" r="6" stroke="black" stroke-width="1.5" fill="none"/><circle cx="16" cy="16" r="1.2" fill="black"/></svg>') 16 16, crosshair !important;
+}
+
+
+
+/* --- SIDEBAR TOGGLE BUTTON --- */
+.sidebar-collapsed #sidebar {
+  display: none !important;
+}
+
+#sidebarToggleBtn {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 32px;
+  height: 32px;
+  background-color: white;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  outline: none;
+  padding: 0;
+  margin: 0;
+}
+#sidebarToggleBtn:hover {
+  background-color: #f4f4f4;
+  color: #2196F3;
+  border-color: #999;
+}
+
+/* --- DROP ZONES FOR DRAG MODE --- */
+.drop-zone {
+  border: 2px dashed #2196F3;
+  border-radius: 4px;
+  padding: 10px 8px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: bold;
+  color: #1976D2;
+  background: rgba(33, 150, 243, 0.06);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+  user-select: none;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.3;
+}
+
+.drop-zone:hover {
+  background: rgba(33, 150, 243, 0.12);
+  border-color: #1565C0;
+}
+
+.drop-zone.dragover {
+  background: rgba(33, 150, 243, 0.25);
+  border-color: #0D47A1;
+  color: #0D47A1;
+  transform: scale(1.01);
+}
+
+/* --- GT DEL MODE BUTTONS --- */
+.gt-del-btn {
+  flex: 1;
+  margin: 0;
+  padding: 6px 4px;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.gt-del-btn.active {
+  background-color: #d32f2f !important;
+  color: #ffffff !important;
+  border: 1px solid #b71c1c !important;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.gt-del-btn:not(.active) {
+  background-color: #ffffff !important;
+  color: #c62828 !important;
+  border: 1px solid #ef5350 !important;
+}
+
+.gt-del-btn:not(.active):hover {
+  background-color: #ffebee !important;
+  color: #b71c1c !important;
+}
