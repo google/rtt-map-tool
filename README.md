@@ -10,6 +10,10 @@ geographic coordinates, place and calibrate Wi-Fi Access Points (`AP`), define
 Ground Truth (`GT`) survey paths, construct OpenStreetMap (`OSM`) walkable route
 graphs (`WP`), and analyze BSSID positioning accuracy.
 
+To try out the RTT Map Tool click the link:
+<https://google.github.io/rtt-map-tool/rtt-map-tool.html>
+and view the operator instructions at [USER_GUIDE.md](USER_GUIDE.md).
+
 > **Disclaimer:** This is not an officially supported Google product. This
 > project is not eligible for the
 > [Google Open Source Software Vulnerability Rewards Program](https://bughunters.google.com/open-source-security).
@@ -81,8 +85,9 @@ single portable HTML file (`rtt-map-tool-out.html`):
     -   In the **Floorplan** panel, load a floorplan image (e.g., `CL4-2.png`)
         and adjust the opacity slider or `SW`/`NE` bounding coordinates.
 3.  **Edit Markers & Walkable Routes**:
-    -   Use the **Edit** panel to toggle between `AP`, `GT`, `WP`, or `FP
-        Corners` and choose an edit mode (`mov`, `add`, `ins`, `del`, `nud`).
+    -   Use the **Edit** panel to toggle between `AP`, `GT`, `WP`, or
+        `FP Corners` and choose an edit mode
+        (`mov`, `add`, `ins`, `del`, `nud`).
     -   Load or export `.osm` walkable route files from the **File** /
         **Export** panels.
 4.  **Export Updates**:
